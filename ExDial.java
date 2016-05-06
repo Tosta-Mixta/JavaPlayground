@@ -3,184 +3,176 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-class MaFenetre extends JFrame implements ActionListener{
+class MaFenetre extends JFrame implements ActionListener {
     static public final String[] nomCouleurs = {"rouge", "vert", "jaune", "bleu"};
     static public final Color[] couleurs = {Color.red, Color.green, Color.yellow, Color.blue};
 
-    public MaFenetre (){
-        setTitle ("Figures avec boite dialogue");
-        setSize(450, 200);
-
+    public MaFenetre () {
+        setTitle ("FIGURES AVEC BOITE DIALOGUE");
+        setSize (450, 200);
         Container contenu = getContentPane();
-        /* Panneau pour les dessins */
-        pan = new PanneauDessin();
+
+        /* panneau pour les dessins */
+        pan = new PaneauDessin();
         contenu.add(pan);
-        /* Bouton pour lancer la boite de dialogue */
-        lanceDial = new JButton ("Modifications");
-        contenu.add(lanceDial, "South");
-        lanceDial.addActionListener(this);
+
+        /* bouton pour lancer la boite de dialogue */
+        lanceDial = new JButton ("MODIFICATIONS");
+        contenu.add (lanceDial, "South");
+        lanceDial.addActionListener (this);
     }
-    public void actionPerformed (ActionListener ev) {
-        if (dialogue == null) {
+
+    public void actionPerformed (ActionEvent ev) {
+        if (dialogue == null){
             dialogue = new Dialogue(this);
-            infos = new Infos();
+            infos = new Infos ();
         }
-        /* Recup informations courantes dans l'objet infos */
+
+        /* recup informations courantes dans l’objet infos */
         infos.largeur = pan.getLargeur();
         infos.hauteur = pan.getHauteur();
         infos.rectangle = pan.getRectangle();
-        infos.ovale = pan.getNomCouleur();
-        /* Lancement dialogue */
+        infos.ovale = pan.getOvale();
+        infos.nomCouleur = pan.getNomCouleur();
+
+        /* lancement dialogue */
         dialogue.lanceDial(infos);
-        /* Prise en comptre de nouvelles informations */
-        pan.setLargeur(infos.largeur);
-        pan.setHauteur(infos.hauteur);
-        pan.setRectangle(infos.rectangle);
-        pan.setOvale(infos.ovale);
-        pan.setCouleur(infos.nomCouleur);
+
+        /* prise en compte nouvelles informations */
+        pan.setLargeur (infos.largeur);
+        pan.setHauteur (infos.hauteur);
+        pan.setRectangle (infos.rectangle);
+        pan.setOvale (infos.ovale);
+        pan.setCouleur (infos.nomCouleur);
         pan.repaint();
-        }
-    private PanneauDessin pan;
+    }
+    private PaneauDessin pan;
     private JButton lanceDial;
     private Dialogue dialogue;
     private Infos infos;
-    }
+}
+
 
 class Dialogue extends JDialog implements ActionListener {
     public Dialogue(JFrame parent){
         super (parent, "COULEURS, FORMES, TAILLES", true);
-        setSize(420, 100);
-        Container contenu = getContenuPane();
-
+        setSize (420, 100);
+        Container contenu = getContentPane();
+        okBouton = new JButton ("OK");
         contenu.add(okBouton);
         contenu.setLayout(new FlowLayout());
         okBouton.addActionListener(this);
-
-        cancelBouton = new JButton("Cancel");
+        cancelBouton = new JButton ("Cancel");
         contenu.add(cancelBouton);
         cancelBouton.addActionListener(this);
 
-        /* Choix Couleur */
+        /* choix couleur */
         comboCoulFond = new JComboBox (MaFenetre.nomCouleurs);
         contenu.add(comboCoulFond);
 
-        /* Choix Dimensions */
+        /* choix dimensions */
         JLabel dim = new JLabel ("DIMENSIONS");
-        contenu.add(dim);
+        contenu.add (dim);
+        txtLargeur = new JTextField (5);
+        contenu.add (txtLargeur);
+        txtHauteur = new JTextField (5);
+        contenu.add (txtHauteur);
 
-        txtLargeur = new JTextField(5);
-        contenu.add(txtLargeur);
-
-        txtHauteur = new JTextField(5);
-        contenu.add(txtHauteur);
-
-        /* Choix formes */
-        cOvale = new JCheckBox("Ovale");
-        contenu.add(cOvale);
-
-        cRectangle = new JCheckBox("Rectangle");
-        contenu.add(cRectangle);
+        /* choix formes */
+        cOvale = new JCheckBox ("Ovale");
+        contenu.add (cOvale);
+        cRectangle = new JCheckBox ("Rectangle");
+        contenu.add (cRectangle);
     }
-    public void lanceDial(Infos infos){
-        /* placer infos dans controles */
+
+    public void lanceDial(Infos infos){/* placer infos dans controles */
         txtLargeur.setText(""+infos.largeur);
-        txtHauteur.setText(""+infos.hauteur);
+        txtHauteur.setText (""+infos.hauteur);
+        cOvale.setSelected (infos.ovale);
+        cRectangle.setSelected (infos.rectangle);
+        comboCoulFond.setSelectedItem (infos.nomCouleur);
 
-        cOvale.setSelected(infos.ovale);
-        cRectangle.setSelected(infos.rectangle);
-        comboCoulFond.setSelectedItem(infos.nomCouleur);
-
-        /* lancer dialogue */
+        /* lancer le dialogue */
         ok = false;
-        setVisible(true);
-        /* Si ok on recupere les informations du dialogue */
-        if (ok){
-            infos.largeur = Integer.parseInt(txtLargeur.getText());
-            infos.hauteur = Integer.parseInt(txtHauteur.getText());
-            infos.rectangle = cRectangle.isSelected();
-            infos.ovale = cOvale.isSelected();
-            infos.nomCouleur = (String)comboCoulFond.getSelectedItem();
+        setVisible (true);
+
+        /* si ok on recupere les informations du dialogue */
+        if (ok) {
+        infos.largeur = Integer.parseInt(txtLargeur.getText());
+        infos.hauteur = Integer.parseInt(txtHauteur.getText());
+        infos.rectangle = cRectangle.isSelected();
+        infos.ovale = cOvale.isSelected();
+        infos.nomCouleur = (String)comboCoulFond.getSelectedItem();
         }
     }
-    public void actionPerformed (ActionListener e){
+    public void actionPerformed (ActionEvent e) {
         if (e.getSource() == okBouton){
             ok = true;
             setVisible(false);
         }
-        if (e.getSource() == cancelBouton){
+        if (e.getSource() == cancelBouton)
             setVisible(false);
-        }
     }
     private JButton okBouton, cancelBouton;
     private boolean ok = false;
     private JComboBox comboCoulFond;
     private JTextField txtLargeur, txtHauteur;
     private JCheckBox cOvale, cRectangle;
+}
 
-    class Infos {
-        public boolean ovale, rectangle;
-        public int largeur, hauteur;
-        public String nomCouleur;
+
+class Infos {
+    public boolean ovale, rectangle;
+    public int largeur, hauteur;
+    public String nomCouleur;
+}
+
+class PaneauDessin extends JPanel{
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        if (ovale) g.drawOval (10, 10, 10 + largeur, 10 + hauteur);
+        if (rectangle) g.drawRect (10, 10, 10 + largeur, 10 + hauteur);
     }
-
-    class PanneauDessin extends JPanel{
-        public void paintComponent(Graphics g){
-            super.paintComponent(g);
-            if (ovale) g.drawOval (10, 10, 10 + largeur, 10 + hauteur);
-            if (rectangle) g.drawRect (10,10, 10 + largeur, 10 + hauteur);
-        }
-
-        public void setRectangle(boolean b){
-            rectangle = b;
-        }
-
-        public boolean getRectangle() {
-            return rectangle;
-        }
-
-        public void setOvale(boolean b) {
-            ovale=b;
-        }
-
-        public void getOvale(){
-            return ovale;
-        }
-
-        public void setLargeur (int l){
-            largeur = l;
-        }
-
-        public void getLargeur(){
-            return largeur;
-        }
-
-        public void setHauteur(int h){
-            hauteur = h;
-        }
-
-        public void getHauteur(){
-            return hauteur;
-        }
-
-        public void setCouleur(String c){
-            for (int i = 0; i<MaFenetre.nomCouleurs.length; i++)
-                if (c == MaFenetre.nomCouleurs[i]) setBackground(MaFenetre.couleurs[i]);
-            nomCouleur = c;
-        }
-
-        public String getNomCouleur(){
-            return getNomCouleur;
-        }
-        private boolean rectangle = false, ovale = false;
-        private int largeur=50, hauteur=50;
-        private Color couleur;
-        private String nomCouleur = MaFenetre.nomCouleurs[0];
+    public void setRectangle(boolean b){
+        rectangle = b;
     }
-
-
-public class ExDial{
+    public boolean getRectangle (){
+        return rectangle;
+    }
+    public void setOvale(boolean b){
+        ovale = b;
+    }
+    public boolean getOvale (){
+        return ovale;
+    }
+    public void setLargeur (int l){
+        largeur = l;
+    }
+    public int getLargeur (){
+        return largeur;
+    }
+    public void setHauteur (int h){
+        hauteur = h;
+    }
+    public int getHauteur (){
+        return hauteur;
+    }
+    public void setCouleur (String c){
+        for (int i = 0; i<MaFenetre.nomCouleurs.length; i++)
+            if (c == MaFenetre.nomCouleurs[i]) setBackground (MaFenetre.couleurs[i]);
+        nomCouleur = c;
+    }
+    public String getNomCouleur (){
+        return nomCouleur;
+    }
+    private boolean rectangle = false, ovale = false;
+    private int largeur=50, hauteur=50;
+    private Color couleur;
+    private String nomCouleur = MaFenetre.nomCouleurs[0];
+}
+public class ExDial {
     public static void main (String args[]){
-        MaFenetre gen = new MaFenetre();
+        MaFenetre fen = new MaFenetre();
         fen.setVisible(true);
     }
 }
